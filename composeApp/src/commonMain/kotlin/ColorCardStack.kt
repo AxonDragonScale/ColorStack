@@ -1,9 +1,4 @@
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateInt
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -16,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -32,6 +29,7 @@ fun ColorCardStack(
             key(card.id) {
                 ColorCard(
                     card = card,
+                    cardStackState = state,
                     onClick = { }
                 )
             }
@@ -44,19 +42,28 @@ fun ColorCardStack(
 private fun ColorCard(
     modifier: Modifier = Modifier,
     card: ColorCard,
+    cardStackState: ColorCardStackState,
     onClick: () -> Unit,
 ) {
-    var state by remember { mutableStateOf(State.Start) }
-    val transition = updateTransition(targetState = state)
+    var cardState by remember { mutableStateOf(CardState.Start) }
+    val transition = updateTransition(targetState = cardState)
 
     LaunchedEffect(card) {
-        state = State.InStack
+        cardState = CardState.InStack
     }
 
     val rotation by transition.animateFloat(transitionSpec = { spring() }) {
-        when (state) {
-            State.Start -> card.rotationStart
-            State.InStack -> card.rotationInStack
+        when (it) {
+            CardState.Start -> card.rotationStart
+            CardState.InStack -> card.rotationInStack
+        }
+    }
+
+    val density = LocalDensity.current
+    val offset by transition.animateIntOffset(transitionSpec = { spring() }) {
+        when (it) {
+            CardState.Start -> card.translationStart(cardStackState.parentSize, density)
+            CardState.InStack -> card.translationInStack(density)
         }
     }
 
@@ -64,6 +71,7 @@ private fun ColorCard(
         modifier = modifier
             .fillMaxSize(0.5f)
             .aspectRatio(1f)
+            .offset { offset }
             .rotate(rotation),
         onClick = onClick,
         backgroundColor = Color.White,
@@ -86,7 +94,7 @@ private fun ColorCard(
     }
 }
 
-enum class State {
+enum class CardState {
     Start,
     InStack
 }
@@ -96,6 +104,6 @@ enum class State {
 private fun ColorCardStackPreview() {
     ColorCardStack(
         modifier = Modifier,
-        state = rememberColorCardStackState()
+        state = rememberColorCardStackState(DpSize(100.dp, 100.dp))
     )
 }
