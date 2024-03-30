@@ -27,20 +27,17 @@ fun ColorSlider(
     value: Float,
     onValueChange: (Float) -> Unit,
     valueRange: ClosedFloatingPointRange<Float>,
-    steps: Int,
+    step: Float,
 ) {
     Row(
         modifier = modifier.padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val step = remember { (valueRange.endInclusive - valueRange.start) / steps.toFloat() }
-
         Slider(
             modifier = Modifier.weight(1f),
             value = value,
             onValueChange = onValueChange,
             valueRange = valueRange,
-            steps = if (step < 1) 0 else steps,
             colors = SliderDefaults.colors(
                 activeTickColor = Color.Transparent,
                 inactiveTickColor = Color.Transparent,
@@ -62,7 +59,7 @@ fun ColorSlider(
 
             SliderButton(
                 imageVector = Icons.Default.Remove,
-                onClick = { onValueChange(value - step) }
+                onClick = { onValueChange((value - step).coerceIn(valueRange)) }
             )
 
             Text(
@@ -75,7 +72,7 @@ fun ColorSlider(
 
             SliderButton(
                 imageVector = Icons.Default.Add,
-                onClick = { onValueChange(value + step) }
+                onClick = { onValueChange((value + step).coerceIn(valueRange)) }
             )
 
         }
@@ -106,6 +103,6 @@ fun ColorSliderPreview() {
         value = 123f,
         onValueChange = {},
         valueRange = 0f.rangeTo(255f),
-        steps = 255,
+        step = 1f,
     )
 }

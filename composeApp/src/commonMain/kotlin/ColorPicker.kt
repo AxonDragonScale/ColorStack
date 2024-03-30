@@ -26,21 +26,21 @@ fun ColorPicker(
             value = rgb.first.toFloat(),
             onValueChange = { onColorChange(Color(it.roundToInt(), rgb.second, rgb.third)) },
             valueRange = 0f.rangeTo(255f),
-            steps = 255,
+            step = 1f,
         )
         
         ColorSlider(
             value = rgb.second.toFloat(),
             onValueChange = { onColorChange(Color(rgb.first, it.roundToInt(), rgb.third)) },
             valueRange = 0f.rangeTo(255f),
-            steps = 255,
+            step = 1f,
         )
 
         ColorSlider(
             value = rgb.third.toFloat(),
             onValueChange = { onColorChange(Color(rgb.first, rgb.second, it.roundToInt())) },
             valueRange = 0f.rangeTo(255f),
-            steps = 255,
+            step = 1f,
         )
     }
 }
