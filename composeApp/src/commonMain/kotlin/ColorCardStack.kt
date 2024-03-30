@@ -12,9 +12,14 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.random.Random
+
+private const val POP_ANIMATION_DURATION = 500
 
 @Composable
 fun ColorCardStack(
@@ -48,24 +53,75 @@ private fun ColorCard(
     var cardState by remember { mutableStateOf(CardState.Start) }
     val transition = updateTransition(targetState = cardState)
 
-    LaunchedEffect(card) {
-        cardState = CardState.InStack
+    LaunchedEffect(transition.isRunning) {
+        if (!transition.isRunning && cardState == CardState.Popped)
+            cardStackState.remove(card)
     }
 
-    val rotation by transition.animateFloat(transitionSpec = { spring() }) {
-        when (it) {
-            CardState.Start -> card.rotationStart
-            CardState.InStack -> card.rotationInStack
-        }
+    LaunchedEffect(card.isPopped) {
+        cardState = if (card.isPopped) CardState.Popped else CardState.InStack
     }
+
+
+    val rotationStart = remember { Random.nextInt(-90, 90).toFloat() }      // Rotation when card is created offsceen
+    val rotationInStack = remember { Random.nextInt(-30, 30).toFloat() }    // Rotation when card is in the stack
+    val rotationPopped = remember { Random.nextInt(-720, 720).toFloat() }   // Rotation when card is popped
+    val rotation by transition.animateFloat(
+        transitionSpec = {
+            when {
+                CardState.Start isTransitioningTo CardState.InStack -> spring()
+                CardState.InStack isTransitioningTo CardState.Popped ->
+                    tween(durationMillis = POP_ANIMATION_DURATION, easing = EaseIn)
+
+                else -> spring()
+            }
+        },
+        targetValueByState = {
+            when (it) {
+                CardState.Start -> rotationStart
+                CardState.InStack -> rotationInStack
+                CardState.Popped -> rotationPopped
+            }
+        }
+    )
 
     val density = LocalDensity.current
-    val offset by transition.animateIntOffset(transitionSpec = { spring() }) {
-        when (it) {
-            CardState.Start -> card.translationStart(cardStackState.parentSize, density)
-            CardState.InStack -> card.translationInStack(density)
+    val parentSize = cardStackState.parentSize
+    val translationStart = remember { translationStart(parentSize, density) } // Offset when card is created offsceen
+    val translationInStack = remember { translationInStack(density) } // Offset when card is in the stack
+    val translationPopped = remember { translationPopped(parentSize, density) } // Offset when card is popped
+    val translationPopToss = remember {
+        translationPopToss(
+            parentSize,
+            density,
+            translationPopped
+        )
+    } // Offset when card is tossed up to be popped
+    val offset by transition.animateIntOffset(
+        transitionSpec = {
+            if (targetState == CardState.InStack) spring()
+            else keyframes {
+                durationMillis = POP_ANIMATION_DURATION
+
+                // Offset and time for top of toss. EaseOut for decelerate
+                translationPopToss
+                    .at(POP_ANIMATION_DURATION / 2)
+                    .using(EaseOut)
+
+                // Offset and time for end of toss when falling down. EaseIn for accelerate
+                translationPopped
+                    .at(POP_ANIMATION_DURATION)
+                    .using(EaseIn)
+            }
+        },
+        targetValueByState = {
+            when (it) {
+                CardState.Start -> translationStart
+                CardState.InStack -> translationInStack
+                CardState.Popped -> translationPopped
+            }
         }
-    }
+    )
 
     Card(
         modifier = modifier
@@ -94,9 +150,35 @@ private fun ColorCard(
     }
 }
 
+fun translationStart(parentSize: DpSize, density: Density) = with(density) {
+    IntOffset(x = 0, y = (parentSize.height * -2).roundToPx())
+}
+
+fun translationInStack(density: Density) = with(density) {
+    IntOffset(
+        x = Random.nextInt(-25, 25).dp.roundToPx(),
+        y = Random.nextInt(-25, 25).dp.roundToPx(),
+    )
+}
+
+fun translationPopped(parentSize: DpSize, density: Density) = with(density) {
+    IntOffset(
+        x = Random.nextInt(-300, 300).dp.roundToPx(),
+        y = (parentSize.height * 2).roundToPx()
+    )
+}
+
+fun translationPopToss(parentSize: DpSize, density: Density, translationPopped: IntOffset) = with(density) {
+    IntOffset(
+        x = translationPopped.x / 2,
+        y = -Random.nextInt(100, 300).dp.roundToPx()
+    )
+}
+
 enum class CardState {
     Start,
-    InStack
+    InStack,
+    Popped,
 }
 
 @Preview

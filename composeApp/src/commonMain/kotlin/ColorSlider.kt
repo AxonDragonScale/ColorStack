@@ -29,7 +29,7 @@ fun ColorSlider(
     step: Float,
 ) {
     Row(
-        modifier = modifier.padding(8.dp),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Slider(
@@ -48,7 +48,7 @@ fun ColorSlider(
         Row(
             modifier = Modifier
                 .border(
-                    width = 2.dp,
+                    width = 1.dp,
                     color = MaterialTheme.colors.onBackground,
                     shape = RoundedCornerShape(25)
                 )

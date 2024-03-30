@@ -23,6 +23,17 @@ class ColorCardStackState internal constructor(
         addCurrentColor()
     }
 
+    fun pop() {
+        val lastUnPoppedIndex = cardStack.indexOfLast { !it.isPopped }
+        if (lastUnPoppedIndex in cardStack.indices) {
+            cardStack[lastUnPoppedIndex] = cardStack[lastUnPoppedIndex].copy(isPopped = true)
+        }
+    }
+
+    fun remove(card: ColorCard) {
+        cardStack.remove(card)
+    }
+
     private fun addCurrentColor() {
         cardStack.add(ColorCard.create(currentColor))
         if (cardStack.size > 110) cardStack.removeRange(0, 10)
