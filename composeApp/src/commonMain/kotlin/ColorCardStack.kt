@@ -10,9 +10,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -34,7 +32,7 @@ fun ColorCardStack(
             key(card.id) {
                 ColorCard(
                     card = card,
-                    onClick = {  }
+                    onClick = { }
                 )
             }
         }
@@ -48,15 +46,20 @@ private fun ColorCard(
     card: ColorCard,
     onClick: () -> Unit,
 ) {
-    val transition = updateTransition(targetState = card.state)
-    
+    var state by remember { mutableStateOf(State.Start) }
+    val transition = updateTransition(targetState = state)
+
+    LaunchedEffect(card) {
+        state = State.InStack
+    }
+
     val rotation by transition.animateFloat(transitionSpec = { spring() }) {
-        when (card.state) {
-            ColorCard.State.Start -> card.rotationStart
-            ColorCard.State.InStack -> card.rotationInStack
+        when (state) {
+            State.Start -> card.rotationStart
+            State.InStack -> card.rotationInStack
         }
     }
-    
+
     Card(
         modifier = modifier
             .fillMaxSize(0.5f)
@@ -81,6 +84,11 @@ private fun ColorCard(
             )
         }
     }
+}
+
+enum class State {
+    Start,
+    InStack
 }
 
 @Preview
