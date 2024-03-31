@@ -1,22 +1,22 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop.
+# Color Stack
+Color Stack is a small Kotlin Multiplatform Project to explore some of the advanced animation capabilites offered by Compose Mulitplatform.
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+# What does Color Stack offer?
+* Everytime a color value is set, a new card falls from the top into the stack with rotation and translation animations.
+* Switch between multiple Color formats using a Segmented Control.
+* Supports the following Color formats -
+  * RGB
+  * HSL
+  * HSV
+* Sliders to adjust values of the color's components. Make it rain cards by sliding along.
+* Add/Subtract discrete values from the color's components using the button beside the slider.
+* Toss a card off the stack using the POP Button.
 
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+# Sliders and Buttons
+https://github.com/AxonDragonScale/ColorStack/assets/22011353/a1096628-3d8d-4555-9450-cc4296f1d159
 
+# Colors Formats (RGB, HSL, HSV)
+https://github.com/AxonDragonScale/ColorStack/assets/22011353/162ee996-340f-4161-8069-d9197cb92a71
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
-
-**Note:** Compose/Web is Experimental and may be changed at any time. Use it only for evaluation purposes.
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [GitHub](https://github.com/JetBrains/compose-multiplatform/issues).
-
-You can open the web application by running the `:composeApp:wasmJsBrowserDevelopmentRun` Gradle task.
+# Make it Rain and Toss it Up
+https://github.com/AxonDragonScale/ColorStack/assets/22011353/ab944736-0a2d-47ec-bb96-fc82ffc478fe
