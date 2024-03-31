@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
@@ -47,7 +46,7 @@ fun ColorCardStack(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalStdlibApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ColorCard(
     modifier: Modifier = Modifier,
@@ -97,7 +96,7 @@ private fun ColorCard(
                             shape = RoundedCornerShape(4.dp)
                         )
                         .padding(horizontal = 4.dp),
-                    text = "#${card.color.toArgb().toHexString(HexFormat.UpperCase).drop(2)}",
+                    text = "#${card.hexString}",
                     style = MaterialTheme.typography.body2,
                     color = Color.White,
                 )

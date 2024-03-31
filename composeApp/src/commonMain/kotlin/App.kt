@@ -48,7 +48,7 @@ fun App() {
             )
 
             ColorPicker(
-                currentColor = colorCardStackState.currentColor,
+                currentArgb = colorCardStackState.currentArgb,
                 onColorChange = { colorCardStackState.set(it) },
                 onPop = { colorCardStackState.pop() }
             )

@@ -9,15 +9,20 @@ fun rememberColorCardStackState() = remember() {
 class ColorCardStackState internal constructor() {
 
     var currentColor by mutableStateOf(Color.Black)
+    var currentArgb by mutableStateOf(0)
+
     val cardStack = mutableStateListOf<ColorCard>()
 
     init {
-        addCurrentColor()
+        set(Color.Black)
     }
 
     fun set(color: Color) {
         currentColor = color
-        addCurrentColor()
+        val card = ColorCard.create(currentColor)
+        currentArgb = card.argb
+        cardStack.add(card)
+        if (cardStack.size > 50) cardStack.removeRange(0, 10)
     }
 
     fun pop() {
@@ -29,11 +34,6 @@ class ColorCardStackState internal constructor() {
 
     fun remove(card: ColorCard) {
         cardStack.remove(card)
-    }
-
-    private fun addCurrentColor() {
-        cardStack.add(ColorCard.create(currentColor))
-        if (cardStack.size > 50) cardStack.removeRange(0, 10)
     }
 
 }

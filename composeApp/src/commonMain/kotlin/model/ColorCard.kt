@@ -1,5 +1,7 @@
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 
+@OptIn(ExperimentalStdlibApi::class)
 data class ColorCard private constructor(
     val id: Int,
     val color: Color,
@@ -15,4 +17,7 @@ data class ColorCard private constructor(
             isPopped = false,
         )
     }
+
+    val argb = color.toArgb()
+    val hexString = argb.toHexString(HexFormat.UpperCase).drop(2)
 }
