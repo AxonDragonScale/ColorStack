@@ -195,7 +195,7 @@ private fun HSVSliders(
     )
 
     ColorSlider(
-        label = "LIGHTNESS",
+        label = "VALUE / BRIGHTNESS",
         value = hsv.value * 100f,
         onValueChange = { onColorChange(Color.hsv(hsv.hue, hsv.saturation, it / 100f)) },
         valueRange = 0f.rangeTo(100f),
