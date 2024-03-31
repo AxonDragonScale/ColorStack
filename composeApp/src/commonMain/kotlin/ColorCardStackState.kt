@@ -1,17 +1,14 @@
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.DpSize
 
 @Composable
-fun rememberColorCardStackState(parentSize: DpSize) = remember(parentSize) {
-    ColorCardStackState(parentSize = parentSize)
+fun rememberColorCardStackState() = remember() {
+    ColorCardStackState()
 }
 
-class ColorCardStackState internal constructor(
-    val parentSize: DpSize,
-) {
+class ColorCardStackState internal constructor() {
 
-    var currentColor by mutableStateOf(Color.Red)
+    var currentColor by mutableStateOf(Color.Black)
     val cardStack = mutableStateListOf<ColorCard>()
 
     init {
@@ -36,7 +33,7 @@ class ColorCardStackState internal constructor(
 
     private fun addCurrentColor() {
         cardStack.add(ColorCard.create(currentColor))
-        if (cardStack.size > 110) cardStack.removeRange(0, 10)
+        if (cardStack.size > 50) cardStack.removeRange(0, 10)
     }
 
 }

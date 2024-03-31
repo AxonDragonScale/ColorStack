@@ -1,4 +1,3 @@
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,27 +22,34 @@ import kotlin.math.roundToInt
 @Composable
 fun ColorSlider(
     modifier: Modifier = Modifier,
+    label: String,
     value: Float,
     onValueChange: (Float) -> Unit,
     valueRange: ClosedFloatingPointRange<Float>,
     step: Float,
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
+) = Column(modifier = modifier) {
+    Text(
+        modifier = Modifier.offset(y = 4.dp).height(12.dp),
+        text = label,
+        fontSize = 12.sp,
+        fontWeight = FontWeight.Bold,
+        lineHeight = 12.sp,
+    )
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Slider(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).height(36.dp),
             value = value,
             onValueChange = onValueChange,
             valueRange = valueRange,
             colors = SliderDefaults.colors(
+                thumbColor = Color.Black,
+                activeTrackColor = Color.Black,
                 activeTickColor = Color.Transparent,
                 inactiveTickColor = Color.Transparent,
             ),
         )
 
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(8.dp))
 
         Row(
             modifier = Modifier
@@ -62,9 +68,9 @@ fun ColorSlider(
             )
 
             Text(
-                modifier = Modifier.defaultMinSize(minWidth = 40.dp),
+                modifier = Modifier.defaultMinSize(minWidth = 24.dp),
                 text = if (step < 1) value.toString().take(4) else value.roundToInt().toString(),
-                fontSize = 16.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
             )
@@ -87,8 +93,8 @@ fun SliderButton(
     Icon(
         modifier = modifier
             .clickable(onClick = onClick)
-            .padding(8.dp)
-            .size(20.dp),
+            .padding(4.dp)
+            .size(16.dp),
         imageVector = imageVector,
         contentDescription = null
     )
@@ -97,11 +103,32 @@ fun SliderButton(
 @Preview
 @Composable
 fun ColorSliderPreview() {
-    ColorSlider(
-        modifier = Modifier,
-        value = 123f,
-        onValueChange = {},
-        valueRange = 0f.rangeTo(255f),
-        step = 1f,
-    )
+    Column {
+        ColorSlider(
+            modifier = Modifier,
+            label = "RED",
+            value = 0f,
+            onValueChange = {},
+            valueRange = 0f.rangeTo(255f),
+            step = 1f,
+        )
+
+        ColorSlider(
+            modifier = Modifier,
+            label = "BLUE",
+            value = 100f,
+            onValueChange = {},
+            valueRange = 0f.rangeTo(255f),
+            step = 1f,
+        )
+
+        ColorSlider(
+            modifier = Modifier,
+            label = "GREEN",
+            value = 255f,
+            onValueChange = {},
+            valueRange = 0f.rangeTo(255f),
+            step = 1f,
+        )
+    }
 }

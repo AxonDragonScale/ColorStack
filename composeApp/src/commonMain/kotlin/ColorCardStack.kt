@@ -1,4 +1,5 @@
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -11,8 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -24,18 +26,21 @@ private const val POP_ANIMATION_DURATION = 500
 @Composable
 fun ColorCardStack(
     modifier: Modifier = Modifier,
-    state: ColorCardStackState
+    state: ColorCardStackState,
+    parentSize: DpSize,
 ) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
+        val clipboardManager = LocalClipboardManager.current
         state.cardStack.forEach { card ->
             key(card.id) {
                 ColorCard(
                     card = card,
-                    cardStackState = state,
-                    onClick = { }
+                    parentSize = parentSize,
+                    onPopFinish = { state.remove(card) },
+                    onClick = { clipboardManager.setText(AnnotatedString(card.color.toString())) }
                 )
             }
         }
@@ -47,7 +52,8 @@ fun ColorCardStack(
 private fun ColorCard(
     modifier: Modifier = Modifier,
     card: ColorCard,
-    cardStackState: ColorCardStackState,
+    parentSize: DpSize,
+    onPopFinish: () -> Unit,
     onClick: () -> Unit,
 ) {
     var cardState by remember { mutableStateOf(CardState.Start) }
@@ -55,7 +61,7 @@ private fun ColorCard(
 
     LaunchedEffect(transition.isRunning) {
         if (!transition.isRunning && cardState == CardState.Popped)
-            cardStackState.remove(card)
+            onPopFinish()
     }
 
     LaunchedEffect(card.isPopped) {
@@ -63,7 +69,7 @@ private fun ColorCard(
     }
 
     val rotation = animateRotation(transition)
-    val offset = animateTranslation(transition, cardStackState.parentSize)
+    val offset = animateTranslation(transition, parentSize)
 
     Card(
         modifier = modifier
@@ -82,12 +88,20 @@ private fun ColorCard(
             backgroundColor = card.color,
             shape = RoundedCornerShape(8.dp),
         ) {
-            Text(
-                modifier = Modifier.padding(8.dp),
-                text = "#${card.color.toArgb().toHexString(HexFormat.UpperCase).drop(2)}",
-                style = MaterialTheme.typography.body1,
-                color = Color.White,
-            )
+            Box {
+                Text(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .background(
+                            color = Color.Black.copy(alpha = 0.2f),
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                        .padding(horizontal = 4.dp),
+                    text = "#${card.color.toArgb().toHexString(HexFormat.UpperCase).drop(2)}",
+                    style = MaterialTheme.typography.body2,
+                    color = Color.White,
+                )
+            }
         }
     }
 }
@@ -150,7 +164,7 @@ private fun animateTranslation(
     }
 
     // Offset when card is tossed up to be popped
-    val translationPopToss = remember {
+    val translationToss = remember {
         IntOffset(
             x = translationPopped.x / 2,
             y = -Random.nextInt(100, 300).dp.roundToPx()
@@ -165,7 +179,7 @@ private fun animateTranslation(
                     durationMillis = POP_ANIMATION_DURATION
 
                     // Offset and time for top of toss. EaseOut for decelerate
-                    translationPopToss
+                    translationToss
                         .at(POP_ANIMATION_DURATION / 2)
                         .using(EaseOut)
 
@@ -201,6 +215,7 @@ enum class CardState {
 private fun ColorCardStackPreview() {
     ColorCardStack(
         modifier = Modifier,
-        state = rememberColorCardStackState(DpSize(100.dp, 100.dp))
+        state = rememberColorCardStackState(),
+        parentSize = DpSize.Zero,
     )
 }

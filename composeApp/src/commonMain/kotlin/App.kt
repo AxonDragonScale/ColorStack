@@ -5,6 +5,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpSize
@@ -17,12 +19,19 @@ fun App() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colors.background),
+                .background(
+                    Brush.verticalGradient(listOf(
+                        Color.Black.copy(0.7f),
+                        Color.Black.copy(0.9f),
+                        Color.Black,
+                        Color.Black,
+                    ))
+                ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val density = LocalDensity.current
             var parentSize by remember { mutableStateOf(DpSize.Zero) }
-            val colorCardStackState = rememberColorCardStackState(parentSize)
+            val colorCardStackState = rememberColorCardStackState()
             ColorCardStack(
                 modifier = Modifier
                     .weight(1f)
@@ -35,6 +44,7 @@ fun App() {
                         }
                     },
                 state = colorCardStackState,
+                parentSize = parentSize
             )
 
             ColorPicker(
